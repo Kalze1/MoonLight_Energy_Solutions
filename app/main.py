@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 def load_data(dataset_choice):
     if dataset_choice == "Dataset 1":
@@ -14,6 +15,33 @@ def load_data(dataset_choice):
     df = pd.read_csv(file_path)
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
     return df
+
+
+
+
+# Function to plot wind analysis using polar plots
+def plot_wind_polar(df):
+    # Filter out any rows with invalid or missing wind speed and direction data
+    df = df.dropna(subset=['WS', 'WD', 'WSstdev', 'WDstdev'])
+
+    # Convert wind direction from degrees to radians for polar plot
+    df['WD_rad'] = np.deg2rad(df['WD'])
+
+    # Polar plot for wind direction and speed
+    plt.figure(figsize=(10, 8))
+    ax = plt.subplot(111, polar=True)
+    ax.set_theta_direction(-1)  # Set direction of the plot
+    ax.set_theta_offset(np.pi / 2)  # Set offset so 0° is at the top
+
+    # Plotting the wind speed as a function of wind direction
+    sc = ax.scatter(df['WD_rad'], df['WS'], c=df['WSstdev'], cmap='viridis', alpha=0.75)
+    plt.colorbar(sc, label='Wind Speed StdDev (WSstdev)')
+
+    # Add labels and title
+    plt.title('Wind Speed and Direction Distribution')
+    plt.show()
+    st.pyplot(plt)
+
 
 def perform_summary_statistics(df):
     summary_stats = df.describe()
@@ -116,6 +144,7 @@ def main():
     plot_hist = st.sidebar.checkbox("Histograms")
     correlation_heatmap = st.sidebar.checkbox("Correlation Heatmap")
     scatter_matrix_plot = st.sidebar.checkbox("Scatter Matrix")
+    wind_analysis_polar = st.sidebar.checkbox("Wind Analysis (Polar Plot)")
 
     # Load data
     df = load_data(dataset_choice)
@@ -138,6 +167,10 @@ def main():
     if scatter_matrix_plot:
         st.subheader("Scatter Matrix")
         plot_scatter_matrix(df)
+    
+    if wind_analysis_polar:
+        st.subheader("Wind Analysis (Polar Plot)")
+        plot_wind_polar(df)
 
 if __name__ == "__main__":
     main()
