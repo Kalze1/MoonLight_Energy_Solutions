@@ -5,7 +5,7 @@ import seaborn as sns
 
 def load_data(dataset_choice):
     if dataset_choice == "Dataset 1":
-        file_path = r"../data/benin-malanville.csv"
+        file_path = r"data/benin-malanville.csv"
     elif dataset_choice == "Dataset 2":
         file_path = r"../data/sierraleone-bumbuna.csv"
     elif dataset_choice == "Dataset 3":
