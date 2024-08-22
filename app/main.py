@@ -80,7 +80,7 @@ def plot_histograms(df):
 
 def main():
     st.sidebar.title("Dashboard Configuration")
-    project_name = st.sidebar.text_input("Project Name", value="Solar and Weather Data Dashboard")
+    project_name = st.sidebar.text_input("Project Name", value="Solar Radiation Measurement Data")
     st.sidebar.write("Select Dataset:")
     dataset_choice = st.sidebar.radio("", ["Dataset 1", "Dataset 2", "Dataset 3"])
 
@@ -94,7 +94,7 @@ def main():
     
     st.title(project_name)
     st.markdown("## Project Description")
-    st.markdown("This dashboard provides insights into solar and weather data. Select options from the sidebar to customize your analysis and visualizations.")
+    st.markdown("This dashboard provides insights into Solar Radiation Measurement Data. Select options from the sidebar to customize your analysis and visualizations.")
 
     df = load_data(dataset_choice)
 
@@ -112,8 +112,6 @@ def main():
         st.subheader("Histograms of Key Variables")
         plot_histograms(df)
 
-    st.markdown("### Key Findings")
-    st.markdown("Summarize the key findings from the visualizations here.")
 
 if __name__ == "__main__":
     main()
