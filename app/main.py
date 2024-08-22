@@ -220,6 +220,26 @@ def plot_zscore_analysis(df):
     st.pyplot(plt)
 
 
+# Function for Bubble Chart Visualization
+def plot_bubble_chart(df):
+    # Filter data to ensure no missing values in key columns
+    df = df.dropna(subset=['GHI', 'Tamb', 'WS', 'RH', 'BP'])
+
+    plt.figure(figsize=(10, 8))
+
+    # Bubble chart: GHI vs Tamb vs WS, with bubble size representing RH and color representing BP
+    bubble_size = df['RH'] * 10  # Scale RH for better visibility in bubble size
+    plt.scatter(df['GHI'], df['Tamb'], s=bubble_size, c=df['BP'], cmap='viridis', alpha=0.6, edgecolors="w", linewidth=0.5)
+
+    # Add labels and title
+    plt.title('Bubble Chart: GHI vs Tamb vs WS with RH as Bubble Size and BP as Color')
+    plt.xlabel('Global Horizontal Irradiance (GHI)')
+    plt.ylabel('Ambient Temperature (Tamb)')
+
+    # Add a color bar for BP
+    plt.colorbar(label='Barometric Pressure (BP)')
+
+    st.pyplot(plt)
 
 
 def main():
@@ -239,6 +259,7 @@ def main():
     wind_analysis_polar = st.sidebar.checkbox("Wind Analysis (Polar Plot)")
     temperature_analysis = st.sidebar.checkbox("Temperature Analysis (RH vs Temp & Solar Radiation)")
     zscore_analysis = st.sidebar.checkbox("Z-Score Analysis")
+    bubble_chart = st.sidebar.checkbox("Bubble Chart Analysis")
 
     # Load data
     df = load_data(dataset_choice)
@@ -273,6 +294,10 @@ def main():
     if zscore_analysis:
         st.subheader("Z-Score Analysis: Flagging Significant Outliers")
         plot_zscore_analysis(df)
+
+    if bubble_chart:
+        st.subheader("Bubble Chart: GHI vs Tamb vs WS with RH & BP")
+        plot_bubble_chart(df)
 
 if __name__ == "__main__":
     main()
