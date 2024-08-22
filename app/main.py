@@ -130,6 +130,62 @@ def plot_scatter_matrix(df):
     st.pyplot(plt)
 
 
+# Function for Temperature Analysis
+def plot_temperature_analysis(df):
+    # Filter data to ensure no missing values in key columns
+    df = df.dropna(subset=['RH', 'TModA', 'TModB', 'GHI', 'DNI', 'DHI'])
+
+    # Plot the relationship between RH and temperature (TModA and TModB)
+    plt.figure(figsize=(14, 6))
+
+    # Scatter plot for TModA vs RH
+    plt.subplot(1, 2, 1)
+    sns.scatterplot(x='RH', y='TModA', data=df, hue='GHI', palette='coolwarm', alpha=0.7)
+    plt.title('Relative Humidity vs TModA with GHI Hue')
+    plt.xlabel('Relative Humidity (%)')
+    plt.ylabel('Temperature TModA (°C)')
+    plt.legend(title='GHI', loc='upper right')
+
+    # Scatter plot for TModB vs RH
+    plt.subplot(1, 2, 2)
+    sns.scatterplot(x='RH', y='TModB', data=df, hue='DNI', palette='coolwarm', alpha=0.7)
+    plt.title('Relative Humidity vs TModB with DNI Hue')
+    plt.xlabel('Relative Humidity (%)')
+    plt.ylabel('Temperature TModB (°C)')
+    plt.legend(title='DNI', loc='upper right')
+
+    plt.tight_layout()
+    st.pyplot(plt)
+
+    # Plot the relationship between RH and solar radiation (GHI, DNI, DHI)
+    plt.figure(figsize=(14, 6))
+
+    # Scatter plot for GHI vs RH
+    plt.subplot(1, 3, 1)
+    sns.scatterplot(x='RH', y='GHI', data=df, hue='TModA', palette='coolwarm', alpha=0.7)
+    plt.title('Relative Humidity vs GHI')
+    plt.xlabel('Relative Humidity (%)')
+    plt.ylabel('Global Horizontal Irradiance (GHI)')
+
+    # Scatter plot for DNI vs RH
+    plt.subplot(1, 3, 2)
+    sns.scatterplot(x='RH', y='DNI', data=df, hue='TModB', palette='coolwarm', alpha=0.7)
+    plt.title('Relative Humidity vs DNI')
+    plt.xlabel('Relative Humidity (%)')
+    plt.ylabel('Direct Normal Irradiance (DNI)')
+
+    # Scatter plot for DHI vs RH
+    plt.subplot(1, 3, 3)
+    sns.scatterplot(x='RH', y='DHI', data=df, hue='GHI', palette='coolwarm', alpha=0.7)
+    plt.title('Relative Humidity vs DHI')
+    plt.xlabel('Relative Humidity (%)')
+    plt.ylabel('Diffuse Horizontal Irradiance (DHI)')
+
+    plt.tight_layout()
+    st.pyplot(plt)
+
+
+
 def main():
     st.title("Data Analysis Dashboard")
 
@@ -145,6 +201,7 @@ def main():
     correlation_heatmap = st.sidebar.checkbox("Correlation Heatmap")
     scatter_matrix_plot = st.sidebar.checkbox("Scatter Matrix")
     wind_analysis_polar = st.sidebar.checkbox("Wind Analysis (Polar Plot)")
+    temperature_analysis = st.sidebar.checkbox("Temperature Analysis (RH vs Temp & Solar Radiation)")
 
     # Load data
     df = load_data(dataset_choice)
@@ -171,6 +228,10 @@ def main():
     if wind_analysis_polar:
         st.subheader("Wind Analysis (Polar Plot)")
         plot_wind_polar(df)
+
+    if temperature_analysis:
+        st.subheader("Temperature Analysis: RH vs Temp & Solar Radiation")
+        plot_temperature_analysis(df)
 
 if __name__ == "__main__":
     main()
