@@ -5,11 +5,11 @@ import seaborn as sns
 
 def load_data(dataset_choice):
     if dataset_choice == "Dataset 1":
-        file_path = r"C:\Users\windows 10\Desktop\new\week_0\MoonLight_Energy_Solutions\data\benin-malanville.csv"
+        file_path = r"../data/benin-malanville.csv"
     elif dataset_choice == "Dataset 2":
-        file_path = r"C:\Users\windows 10\Desktop\new\week_0\MoonLight_Energy_Solutions\data\sierraleone-bumbuna.csv"
+        file_path = r"../data/sierraleone-bumbuna.csv"
     elif dataset_choice == "Dataset 3":
-        file_path = r"C:\Users\windows 10\Desktop\new\week_0\MoonLight_Energy_Solutions\data\togo-dapaong_qc.csv"
+        file_path = r"../data/togo-dapaong_qc.csv"
     
     df = pd.read_csv(file_path)
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
