@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from scipy.stats import zscore
 
 def load_data(dataset_choice):
     if dataset_choice == "Dataset 1":
@@ -186,6 +187,41 @@ def plot_temperature_analysis(df):
 
 
 
+
+
+# Function for Z-Score Analysis
+def plot_zscore_analysis(df):
+    # List of columns for which to calculate Z-scores
+    columns_to_analyze = ['GHI', 'DNI', 'DHI', 'WS', 'TModA', 'TModB']
+
+    # Calculate Z-scores for the selected columns
+    z_scores = df[columns_to_analyze].apply(zscore)
+
+    # Add Z-scores to the original DataFrame
+    for col in columns_to_analyze:
+        df[f'{col}_zscore'] = z_scores[col]
+
+    # Flag data points with Z-scores that are significantly different from the mean
+    significant_threshold = 3
+    outliers = df[(z_scores.abs() > significant_threshold).any(axis=1)]
+
+    st.write("Outliers flagged by Z-Score Analysis:")
+    st.dataframe(outliers)
+
+    # Optionally, you can visualize these outliers
+    plt.figure(figsize=(14, 7))
+    for i, col in enumerate(columns_to_analyze, 1):
+        plt.subplot(2, 3, i)
+        sns.scatterplot(data=df, x='Timestamp', y=col, hue=f'{col}_zscore', palette='coolwarm')
+        plt.axhline(y=df[col].mean(), color='gray', linestyle='--')
+        plt.title(f'{col} vs Time with Z-Score Hue')
+
+    plt.tight_layout()
+    st.pyplot(plt)
+
+
+
+
 def main():
     st.title("Data Analysis Dashboard")
 
@@ -202,6 +238,7 @@ def main():
     scatter_matrix_plot = st.sidebar.checkbox("Scatter Matrix")
     wind_analysis_polar = st.sidebar.checkbox("Wind Analysis (Polar Plot)")
     temperature_analysis = st.sidebar.checkbox("Temperature Analysis (RH vs Temp & Solar Radiation)")
+    zscore_analysis = st.sidebar.checkbox("Z-Score Analysis")
 
     # Load data
     df = load_data(dataset_choice)
@@ -232,6 +269,10 @@ def main():
     if temperature_analysis:
         st.subheader("Temperature Analysis: RH vs Temp & Solar Radiation")
         plot_temperature_analysis(df)
+
+    if zscore_analysis:
+        st.subheader("Z-Score Analysis: Flagging Significant Outliers")
+        plot_zscore_analysis(df)
 
 if __name__ == "__main__":
     main()
