@@ -78,40 +78,66 @@ def plot_histograms(df):
     plt.tight_layout()
     st.pyplot(plt)
 
+
+# Function to plot correlation heatmap
+def plot_correlation_heatmap(df):
+    # Filter and calculate correlation
+    df = df[(df['GHI'] >= 0) & (df['DNI'] >= 0) & (df['DHI'] >= 0)]
+    corr_matrix = df[['GHI', 'DNI', 'DHI', 'TModA', 'TModB']].corr()
+
+    # Plot heatmap
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+    plt.title('Correlation between Solar Radiation Components and Temperature Measures')
+    st.pyplot(plt)
+
+
+# Function to plot scatter matrix
+def plot_scatter_matrix(df):
+    scatter_matrix_data = df[['GHI', 'DNI', 'DHI', 'WS', 'WSgust', 'WD']]
+    
+    plt.figure(figsize=(12, 12))
+    scatter_matrix(scatter_matrix_data, figsize=(12, 12), diagonal='kde')
+    plt.suptitle('Scatter Matrix: Wind Conditions and Solar Irradiance')
+    st.pyplot(plt)
+
+
 def main():
+    st.title("Data Analysis Dashboard")
+
+    # Sidebar options
     st.sidebar.title("Dashboard Configuration")
-    project_name = st.sidebar.text_input("Project Name", value="Solar Radiation Measurement Data")
-    st.sidebar.write("Select Dataset:")
-    dataset_choice = st.sidebar.radio("", ["Dataset 1", "Dataset 2", "Dataset 3"])
+    project_name = st.sidebar.text_input("Project Name", value="Solar and Weather Data Dashboard")
+    dataset_choice = st.sidebar.radio("Select Dataset", ["Dataset 1", "Dataset 2", "Dataset 3"])
 
     st.sidebar.write("Select Analysis Options:")
     summary_stats = st.sidebar.checkbox("Summary Statistics")
     data_quality_check = st.sidebar.checkbox("Data Quality Check")
     plot_hist = st.sidebar.checkbox("Histograms")
+    correlation_heatmap = st.sidebar.checkbox("Correlation Heatmap")
+    scatter_matrix_plot = st.sidebar.checkbox("Scatter Matrix")
 
-    st.sidebar.write("Filter Data (Optional):")
-    date_filter = st.sidebar.date_input("Select Date Range", [])
-    
-    st.title(project_name)
-    st.markdown("## Project Description")
-    st.markdown("This dashboard provides insights into Solar Radiation Measurement Data. Select options from the sidebar to customize your analysis and visualizations.")
-
+    # Load data
     df = load_data(dataset_choice)
 
-    st.markdown("### Data Overview")
-    st.write(f"Number of rows: {df.shape[0]}")
-    st.write(f"Number of columns: {df.shape[1]}")
-
+    # Perform selected analyses
     if summary_stats:
         perform_summary_statistics(df)
-
+    
     if data_quality_check:
         perform_data_quality_check(df)
-
+    
     if plot_hist:
         st.subheader("Histograms of Key Variables")
         plot_histograms(df)
-
+    
+    if correlation_heatmap:
+        st.subheader("Correlation Heatmap")
+        plot_correlation_heatmap(df)
+    
+    if scatter_matrix_plot:
+        st.subheader("Scatter Matrix")
+        plot_scatter_matrix(df)
 
 if __name__ == "__main__":
     main()
